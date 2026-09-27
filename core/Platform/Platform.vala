@@ -92,6 +92,34 @@ namespace Platform {
     }
 
     /*
+     * Pango's fallback fonts for the Windows UI font don't include an emoji
+     * font, so emoji (project icons, task names…) would be drawn as
+     * missing-glyph boxes. List the Windows emoji fonts after the UI font so
+     * they are used for the characters it lacks.
+     */
+    public void install_emoji_font_fallback () {
+#if WINDOWS
+        string family = "Segoe UI";
+        string? font_name = Gtk.Settings.get_default ().gtk_font_name;
+        if (font_name != null) {
+            string? system_family = Pango.FontDescription.from_string (font_name).get_family ();
+            if (system_family != null && system_family != "") {
+                family = system_family;
+            }
+        }
+
+        var provider = new Gtk.CssProvider ();
+        provider.load_from_string (
+            "window, popover { font-family: \"%s\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; }".printf (family)
+        );
+
+        Gtk.StyleContext.add_provider_for_display ( // vala-lint=deprecated
+            Gdk.Display.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        );
+#endif
+    }
+
+    /*
      * Makes the running executable the handler for planify:// links, which
      * the Todoist login redirects to. On Linux this is done by the .desktop
      * file.

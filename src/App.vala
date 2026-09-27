@@ -144,6 +144,7 @@ public class Planify : Adw.Application {
         // planify:// handler (used by the Todoist login) ourselves.
         Gtk.Window.set_default_icon_name (Build.APPLICATION_ID);
         Platform.register_uri_scheme ();
+        Platform.install_emoji_font_fallback ();
 #endif
 
         main_window = new MainWindow (this);

@@ -23,6 +23,8 @@ public class QuickAdd : Adw.Application {
     }
 
     protected override void activate () {
+        Platform.install_emoji_font_fallback ();
+
         main_window = new MainWindow (this);
         main_window.show ();
 
