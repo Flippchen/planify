@@ -59,7 +59,7 @@ public class Dialogs.Preferences.Pages.General : Dialogs.Preferences.Pages.BaseP
         var de_group = new Adw.PreferencesGroup ();
         de_group.title = _("DE Integration");
 
-        #if WITH_LIBPORTAL
+        #if WITH_LIBPORTAL || WINDOWS
         var run_on_startup_switch = new Gtk.Switch () {
             valign = Gtk.Align.CENTER,
             active = Services.Settings.get_default ().settings.get_boolean ("run-on-startup")
@@ -87,11 +87,13 @@ public class Dialogs.Preferences.Pages.General : Dialogs.Preferences.Pages.BaseP
         de_group.add (run_background_row);
         #endif
 
+        #if !WINDOWS
         var search_provider_row = new Adw.ActionRow ();
         search_provider_row.title = _("GNOME Shell Search");
         search_provider_row.subtitle = _("Search tasks and projects directly from GNOME Shell. Enable it in Settings → Search");
 
         de_group.add (search_provider_row);
+        #endif
 
         var datetime_group = new Adw.PreferencesGroup ();
         datetime_group.title = _("Date and Time");
@@ -170,7 +172,7 @@ public class Dialogs.Preferences.Pages.General : Dialogs.Preferences.Pages.BaseP
                                                                 (int) sort_order_projects_row.selected);
         })] = sort_order_projects_row;
 
-#if WITH_LIBPORTAL
+#if WITH_LIBPORTAL || WINDOWS
         var run_background_handler = run_background_switch.notify["active"].connect (() => {
             Services.Settings.get_default ().settings.set_boolean ("run-in-background", run_background_switch.active);
         });

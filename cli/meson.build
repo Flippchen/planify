@@ -11,6 +11,7 @@ executable(
   'io.github.alainm23.planify.cli',
   cli_sources,
   config_file,
+  win_resources,
   dependencies: deps,
   install: true,
 )

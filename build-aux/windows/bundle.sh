@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#
+# Builds Planify and assembles a self-contained, relocatable Windows bundle
+# (the application plus every DLL, GSettings schema, icon, translation and
+# GIO module it needs at runtime).
+#
+# Run it from an MSYS2 UCRT64 shell, at the root of the repository:
+#
+#   build-aux/windows/bundle.sh [output-dir]
+#
+# The bundle is written to dist/planify unless another directory is given.
+# See docs/windows.md for the list of MSYS2 packages to install first.
+
+set -euo pipefail
+
+if [[ -z "${MINGW_PREFIX:-}" ]]; then
+    echo "error: run this script from an MSYS2 UCRT64 (or MINGW64/CLANG64) shell" >&2
+    exit 1
+fi
+
+SRC_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+BUILD_DIR=${BUILD_DIR:-"$SRC_DIR/build-windows"}
+DIST_DIR=${1:-"$SRC_DIR/dist/planify"}
+PROFILE=${PROFILE:-default}
+
+rm -rf "$DIST_DIR"
+mkdir -p "$DIST_DIR"
+DIST_DIR=$(cd "$DIST_DIR" && pwd)
+
+# Windows builds find their data relative to the executable, so the prefix
+# only decides where `meson install` puts the files.
+setup_args=(
+    --prefix="$(cygpath -m "$DIST_DIR")"
+    --buildtype=release
+    -Dprofile="$PROFILE"
+    -Dportal=false
+    -Devolution=false
+    -Dgoa=false
+    -Dspelling=disabled
+)
+
+if [[ -d "$BUILD_DIR" ]]; then
+    meson setup --reconfigure "$BUILD_DIR" "$SRC_DIR" "${setup_args[@]}"
+else
+    meson setup "$BUILD_DIR" "$SRC_DIR" "${setup_args[@]}"
+fi
+
+meson compile -C "$BUILD_DIR"
+meson install -C "$BUILD_DIR"
+
+echo "==> Copying runtime files from $MINGW_PREFIX"
+
+copy_tree() {
+    local rel=$1
+    if [[ -e "$MINGW_PREFIX/$rel" ]]; then
+        mkdir -p "$DIST_DIR/$(dirname "$rel")"
+        cp -r "$MINGW_PREFIX/$rel" "$DIST_DIR/$rel"
+    else
+        echo "warning: $MINGW_PREFIX/$rel not found, skipping" >&2
+    fi
+}
+
+# Helper programs GLib spawns at runtime: gdbus.exe starts the session bus
+# that keeps Planify single-instance and lets Quick Add and the CLI reach it.
+for exe in gdbus.exe gspawn-win64-helper.exe gspawn-win64-helper-console.exe; do
+    if [[ -f "$MINGW_PREFIX/bin/$exe" ]]; then
+        cp "$MINGW_PREFIX/bin/$exe" "$DIST_DIR/bin/"
+    fi
+done
+
+# GIO modules: glib-networking provides TLS, needed for every sync backend.
+copy_tree lib/gio/modules
+rm -f "$DIST_DIR"/lib/gio/modules/*.a
+gio-querymodules "$DIST_DIR/lib/gio/modules"
+
+# Image loaders.
+copy_tree lib/gdk-pixbuf-2.0
+rm -f "$DIST_DIR"/lib/gdk-pixbuf-2.0/*/loaders/*.a
+
+# GSettings schemas of the libraries Planify uses, next to its own.
+for schema in "$MINGW_PREFIX"/share/glib-2.0/schemas/org.gtk.*.xml; do
+    cp "$schema" "$DIST_DIR/share/glib-2.0/schemas/"
+done
+glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas"
+
+# Icon themes and GtkSourceView language definitions.
+copy_tree share/icons/Adwaita
+copy_tree share/icons/hicolor/index.theme
+copy_tree share/gtksourceview-5
+gtk4-update-icon-cache -q -t -f "$DIST_DIR/share/icons/Adwaita" || true
+gtk4-update-icon-cache -q -t -f "$DIST_DIR/share/icons/hicolor" || true
+
+# Translations of the libraries Planify uses, for the languages it ships.
+for lang_dir in "$DIST_DIR"/share/locale/*/; do
+    lang=$(basename "$lang_dir")
+    for domain in glib20 gtk40 libadwaita gtksourceview-5; do
+        mo="$MINGW_PREFIX/share/locale/$lang/LC_MESSAGES/$domain.mo"
+        if [[ -f "$mo" ]]; then
+            cp "$mo" "$lang_dir/LC_MESSAGES/"
+        fi
+    done
+done
+
+echo "==> Collecting DLL dependencies"
+
+# ldd resolves the whole dependency tree; keep only the MSYS2 libraries.
+collect_dlls() {
+    find "$DIST_DIR" -type f \( -iname '*.exe' -o -iname '*.dll' \) -print0 |
+        xargs -0 -n 1 ldd 2>/dev/null |
+        awk '{ print $3 }' |
+        grep -i "^$MINGW_PREFIX/bin/" |
+        sort -u || true
+}
+
+# Repeat until no new DLL shows up (copied DLLs can pull in more).
+while true; do
+    added=0
+    while read -r dll; do
+        name=$(basename "$dll")
+        if [[ ! -f "$DIST_DIR/bin/$name" ]]; then
+            cp "$dll" "$DIST_DIR/bin/"
+            added=1
+        fi
+    done < <(collect_dlls)
+
+    [[ $added -eq 0 ]] && break
+done
+
+# Development files are of no use in the bundle.
+rm -rf "$DIST_DIR/include" "$DIST_DIR/lib/pkgconfig" "$DIST_DIR/share/vala" \
+    "$DIST_DIR/share/man" "$DIST_DIR/share/metainfo" "$DIST_DIR/share/applications"
+find "$DIST_DIR/lib" -maxdepth 1 -name '*.a' -delete
+
+echo "==> Bundle ready in $DIST_DIR"

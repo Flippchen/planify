@@ -9,6 +9,8 @@ executable(
   quick_find_sources,
   asresources,
   config_file,
+  win_resources,
   dependencies: deps,
+  win_subsystem: 'windows',
   install: true,
 )

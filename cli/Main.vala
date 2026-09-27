@@ -385,7 +385,7 @@ namespace PlanifyCLI {
     public static int main (string[] args) {
         // Initialize localization
         Intl.setlocale (LocaleCategory.ALL, "");
-        string langpack_dir = Path.build_filename (Build.INSTALL_PREFIX, "share", "locale");
+        string langpack_dir = Path.build_filename (Platform.get_install_prefix (Build.INSTALL_PREFIX), "share", "locale");
         Intl.bindtextdomain (Build.GETTEXT_PACKAGE, langpack_dir);
         Intl.bind_textdomain_codeset (Build.GETTEXT_PACKAGE, "UTF-8");
         Intl.textdomain (Build.GETTEXT_PACKAGE);

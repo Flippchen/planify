@@ -7,7 +7,7 @@ deps = [
 ]
 
 
-if get_option('portal')
+if with_portal
     if libportal_dep.found()
         deps += libportal_dep
     endif
@@ -17,13 +17,13 @@ if get_option('portal')
 endif
 
 
-if get_option('evolution')
+if with_evolution
     if libedataserver_dep.found()
         deps += libedataserver_dep
     endif
 endif
 
-if get_option('goa')
+if with_goa
     if goa_dep.found()
         deps += goa_dep
     endif
@@ -148,7 +148,7 @@ sources = files(
   'Dialogs/Preferences/Pages/Accounts/InboxPage.vala'
 )
 
-if get_option('evolution')
+if with_evolution
     sources += 'Widgets/EventRow.vala'
     sources += 'Widgets/EventsList.vala'
     sources += 'Dialogs/CalendarSync.vala'
@@ -160,7 +160,9 @@ executable(
   sources,
   asresources,
   config_file,
+  win_resources,
   dependencies: deps,
+  win_subsystem: 'windows',
   install: true
 )
 

@@ -1,0 +1,90 @@
+name: Windows
+
+on:
+  push:
+    paths-ignore:
+      - 'po/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths-ignore:
+      - 'po/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Windows (MSYS2 UCRT64)"
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            grep
+            zip
+          pacboy: >-
+            cc:p
+            meson:p
+            ninja:p
+            pkgconf:p
+            vala:p
+            gettext-tools:p
+            glib2:p
+            glib-networking:p
+            gtk4:p
+            libadwaita:p
+            adwaita-icon-theme:p
+            gtksourceview5:p
+            libgee:p
+            json-glib:p
+            libsoup3:p
+            sqlite3:p
+            libical:p
+            gxml:p
+            icu:p
+
+      - name: Build bundle
+        run: build-aux/windows/bundle.sh dist/planify
+
+      - name: Run tests
+        run: meson test -C build-windows --no-suite caldav-integration --print-errorlogs
+
+      - name: Smoke test
+        run: |
+          # The CLI links the same core library as the app, so running it
+          # from the bundle (with the MSYS2 tree off PATH) checks that every
+          # DLL was collected.
+          PATH="$(pwd)/dist/planify/bin:/usr/bin" dist/planify/bin/io.github.alainm23.planify.cli.exe --help
+
+      - name: Create portable zip
+        run: |
+          VERSION=$(grep -Po "version:\s*'\K[0-9.]+(?=')" meson.build)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          cd dist
+          zip -qr "planify-$VERSION-windows-x64.zip" planify
+
+      - name: Create installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q `
+            "/DAppVersion=$env:VERSION" `
+            "/DBundleDir=$env:GITHUB_WORKSPACE\dist\planify" `
+            build-aux\windows\planify.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: planify-windows-x64
+          path: |
+            dist/*.zip
+            dist/*-setup.exe

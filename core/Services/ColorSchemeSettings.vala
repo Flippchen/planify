@@ -54,9 +54,29 @@ namespace ColorSchemeSettings {
             });
         }
 
-        private Portal.Settings? portal = null;
-
         private Settings () {}
+
+#if WINDOWS
+        private void setup_prefers_color_scheme () {
+            prefers_color_scheme = read_windows_color_scheme ();
+
+            // Windows has no settings portal to notify us, so poll the
+            // registry to follow light/dark switches while running.
+            Timeout.add_seconds (5, () => {
+                var scheme = read_windows_color_scheme ();
+                if (scheme != prefers_color_scheme) {
+                    prefers_color_scheme = scheme;
+                }
+
+                return GLib.Source.CONTINUE;
+            });
+        }
+
+        private ColorScheme read_windows_color_scheme () {
+            return Platform.system_prefers_dark () ? ColorScheme.DARK : ColorScheme.LIGHT;
+        }
+#else
+        private Portal.Settings? portal = null;
 
         private void setup_prefers_color_scheme () {
             try {
@@ -79,6 +99,7 @@ namespace ColorSchemeSettings {
 
             prefers_color_scheme = ColorScheme.NO_PREFERENCE;
         }
+#endif
     }
 }
 
