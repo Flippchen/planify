@@ -60,7 +60,12 @@ jobs:
         run: build-aux/windows/bundle.sh dist/planify
 
       - name: Run tests
-        run: meson test -C build-windows --no-suite caldav-integration --print-errorlogs
+        run: |
+          # Only Planify's own tests (not the subprojects'), using the
+          # schemas compiled into the bundle.
+          GSETTINGS_SCHEMA_DIR="$(pwd)/dist/planify/share/glib-2.0/schemas" \
+            meson test -C build-windows --suite io.github.alainm23.planify \
+            --no-suite caldav-integration --print-errorlogs
 
       - name: Smoke test
         run: |
