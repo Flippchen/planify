@@ -27,7 +27,7 @@ Every push and pull request is built by the
        mingw-w64-ucrt-x86_64-{cc,meson,ninja,pkgconf,vala,gettext-tools} \
        mingw-w64-ucrt-x86_64-{glib2,glib-networking,gtk4,libadwaita,adwaita-icon-theme} \
        mingw-w64-ucrt-x86_64-{gtksourceview5,libgee,json-glib,libsoup3,sqlite3} \
-       mingw-w64-ucrt-x86_64-{libical,gxml,icu}
+       mingw-w64-ucrt-x86_64-{libical,libxml2,icu}
    ```
 
 3. Clone the repository with its submodules and build a bundle:

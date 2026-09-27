@@ -51,7 +51,7 @@ jobs:
             libsoup3:p
             sqlite3:p
             libical:p
-            gxml:p
+            libxml2:p
             icu:p
 
       - name: Build bundle
