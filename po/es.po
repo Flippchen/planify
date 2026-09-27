@@ -499,7 +499,7 @@ msgstr ""
 "Lo siento, Añadir Rápido no encuentra ningún proyecto disponible. Intenta "
 "crear un proyecto desde Planify."
 
-#: core/QuickAddCore.vala:1455 src/MainWindow.vala:792
+#: core/QuickAddCore.vala:1455 src/MainWindow.vala:809
 msgid "Keyboard Shortcuts"
 msgstr "Atajos de teclado"
 
@@ -786,21 +786,21 @@ msgid_plural "%d days ago"
 msgstr[0] "hace %d día"
 msgstr[1] "hace %d días"
 
-#: core/Utils/Datetime.vala:853 core/Widgets/Calendar/CalendarHeader.vala:36
+#: core/Utils/Datetime.vala:868 core/Widgets/Calendar/CalendarHeader.vala:36
 #: core/Widgets/Calendar/CalendarHeader.vala:57
 msgid "%Y"
 msgstr "%Y"
 
-#: core/Utils/Datetime.vala:858
+#: core/Utils/Datetime.vala:873
 msgid "%a %Y"
 msgstr "%a %Y"
 
-#: core/Utils/Datetime.vala:861
+#: core/Utils/Datetime.vala:876
 #, c-format
 msgid "%a"
 msgstr "%a"
 
-#: core/Utils/Datetime.vala:866
+#: core/Utils/Datetime.vala:881
 msgid "%b"
 msgstr "%b"
 
@@ -1234,37 +1234,37 @@ msgid "Sa"
 msgstr "Sáb"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:56
-#: src/Dialogs/Preferences/Pages/General.vala:111
+#: src/Dialogs/Preferences/Pages/General.vala:113
 msgid "Sunday"
 msgstr "Domingo"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:56
-#: src/Dialogs/Preferences/Pages/General.vala:112
+#: src/Dialogs/Preferences/Pages/General.vala:114
 msgid "Monday"
 msgstr "Lunes"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:56
-#: src/Dialogs/Preferences/Pages/General.vala:113
+#: src/Dialogs/Preferences/Pages/General.vala:115
 msgid "Tuesday"
 msgstr "Martes"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:56
-#: src/Dialogs/Preferences/Pages/General.vala:114
+#: src/Dialogs/Preferences/Pages/General.vala:116
 msgid "Wednesday"
 msgstr "Miércoles"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:57
-#: src/Dialogs/Preferences/Pages/General.vala:115
+#: src/Dialogs/Preferences/Pages/General.vala:117
 msgid "Thursday"
 msgstr "Jueves"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:57
-#: src/Dialogs/Preferences/Pages/General.vala:116
+#: src/Dialogs/Preferences/Pages/General.vala:118
 msgid "Friday"
 msgstr "Viernes"
 
 #: core/Widgets/Calendar/CalendarWeek.vala:57
-#: src/Dialogs/Preferences/Pages/General.vala:117
+#: src/Dialogs/Preferences/Pages/General.vala:119
 msgid "Saturday"
 msgstr "Sábado"
 
@@ -1705,7 +1705,7 @@ msgstr "Por hacer"
 msgid "Complete"
 msgstr "Completar"
 
-#: src/App.vala:185
+#: src/App.vala:193
 msgid ""
 "Planify will automatically start when this device turns on and run when its "
 "window is closed so that it can send to-do notifications."
@@ -1901,7 +1901,7 @@ msgstr "Actualizar etiqueta"
 msgid "Filter"
 msgstr "Filtro"
 
-#: src/Dialogs/ManageProjects.vala:29 src/MainWindow.vala:797
+#: src/Dialogs/ManageProjects.vala:29 src/MainWindow.vala:814
 msgid "Archived Projects"
 msgstr "Proyectos archivados"
 
@@ -2535,41 +2535,41 @@ msgstr "Ejecutar en segundo plano"
 msgid "Keep Planify running in the system tray when closing the window"
 msgstr ""
 
-#: src/Dialogs/Preferences/Pages/General.vala:91
+#: src/Dialogs/Preferences/Pages/General.vala:92
 msgid "GNOME Shell Search"
 msgstr ""
 
-#: src/Dialogs/Preferences/Pages/General.vala:92
+#: src/Dialogs/Preferences/Pages/General.vala:93
 msgid ""
 "Search tasks and projects directly from GNOME Shell. Enable it in Settings → "
 "Search"
 msgstr ""
 
-#: src/Dialogs/Preferences/Pages/General.vala:97
+#: src/Dialogs/Preferences/Pages/General.vala:99
 msgid "Date and Time"
 msgstr "Fecha y hora"
 
-#: src/Dialogs/Preferences/Pages/General.vala:100
+#: src/Dialogs/Preferences/Pages/General.vala:102
 msgid "24h"
 msgstr "24h"
 
-#: src/Dialogs/Preferences/Pages/General.vala:101
+#: src/Dialogs/Preferences/Pages/General.vala:103
 msgid "12h"
 msgstr "12h"
 
-#: src/Dialogs/Preferences/Pages/General.vala:104
+#: src/Dialogs/Preferences/Pages/General.vala:106
 msgid "Clock Format"
 msgstr "Formato de hora"
 
-#: src/Dialogs/Preferences/Pages/General.vala:120
+#: src/Dialogs/Preferences/Pages/General.vala:122
 msgid "Start of the Week"
 msgstr "Inicio de la semana"
 
-#: src/Dialogs/Preferences/Pages/General.vala:132
+#: src/Dialogs/Preferences/Pages/General.vala:134
 msgid "Smart Date Recognition"
 msgstr "Reconocimiento inteligente de fechas"
 
-#: src/Dialogs/Preferences/Pages/General.vala:133
+#: src/Dialogs/Preferences/Pages/General.vala:135
 msgid "Automatically detect dates like \"tomorrow\" or \"next week\""
 msgstr ""
 "Detecta automáticamente fechas como \"mañana\" o \"la semana que viene\""
@@ -2787,7 +2787,7 @@ msgstr ""
 "Cuando se activa, se añade por defecto un recordatorio antes de la hora de "
 "vencimiento de la tarea."
 
-#: src/Dialogs/Preferences/PreferencesWindow.vala:40 src/MainWindow.vala:771
+#: src/Dialogs/Preferences/PreferencesWindow.vala:40 src/MainWindow.vala:788
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -2938,7 +2938,7 @@ msgstr[1] ""
 
 #: src/Dialogs/ProductivityReport/ProductivityReport.vala:30
 #: src/Dialogs/ProductivityReport/ProductivityReport.vala:199
-#: src/MainWindow.vala:774
+#: src/MainWindow.vala:791
 msgid "Summary & Productivity"
 msgstr ""
 
@@ -2993,7 +2993,7 @@ msgstr ""
 
 #: src/Dialogs/ProductivityReport/ProductivitySection.vala:43
 #: src/Dialogs/ProductivityReport/SummarySection.vala:38
-#: src/MainWindow.vala:873
+#: src/MainWindow.vala:890
 msgid "See More"
 msgstr "Ver más"
 
@@ -3417,35 +3417,35 @@ msgstr "Menú principal"
 msgid "Open Quick Find"
 msgstr "Abrir búsqueda rápida"
 
-#: src/MainWindow.vala:340
+#: src/MainWindow.vala:348
 msgid "Task was modified on another device"
 msgstr ""
 
-#: src/MainWindow.vala:342
+#: src/MainWindow.vala:350
 msgid "Sync Now"
 msgstr ""
 
-#: src/MainWindow.vala:795
+#: src/MainWindow.vala:812
 msgid "About Planify"
 msgstr "Acerca de Planify"
 
-#: src/MainWindow.vala:870
+#: src/MainWindow.vala:887
 msgid "Oops! Something happened"
 msgstr "¡Ups! Algo ha ocurrido"
 
-#: src/MainWindow.vala:889 src/Widgets/ItemChangeHistoryRow.vala:48
+#: src/MainWindow.vala:906 src/Widgets/ItemChangeHistoryRow.vala:48
 msgid "Task completed"
 msgstr "Tarea completada"
 
-#: src/MainWindow.vala:890
+#: src/MainWindow.vala:907
 msgid "View"
 msgstr "Vista"
 
-#: src/MainWindow.vala:928
+#: src/MainWindow.vala:945
 msgid "Database Integrity Check Failed"
 msgstr "Falló la verificación de integridad de la base de datos"
 
-#: src/MainWindow.vala:929
+#: src/MainWindow.vala:946
 msgid ""
 "We've detected issues with the database structure that may prevent the "
 "application from functioning properly. This may be due to missing tables or "
@@ -3468,7 +3468,7 @@ msgstr ""
 "Después del reinicio, podrá restaurar cualquier copia de seguridad que haya "
 "creado previamente. Gracias por su paciencia"
 
-#: src/MainWindow.vala:931
+#: src/MainWindow.vala:948
 msgid "Reset Database"
 msgstr "Reiniciar base de datos"
 

@@ -30,6 +30,7 @@ core/Objects/Reminder.vala
 core/Objects/Section.vala
 core/Objects/Source.vala
 core/Objects/TranslationMetric.vala
+core/Platform/Platform.vala
 core/QuickAddCore.vala
 core/Services/BackupExporter.vala
 core/Services/CalDAV/CalDAVClient.vala
