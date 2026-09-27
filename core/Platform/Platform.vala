@@ -92,30 +92,16 @@ namespace Platform {
     }
 
     /*
-     * Pango's fallback fonts for the Windows UI font don't include an emoji
-     * font, so emoji (project icons, task names…) would be drawn as
-     * missing-glyph boxes. List the Windows emoji fonts after the UI font so
-     * they are used for the characters it lacks.
+     * Must be called at the start of main (), before GTK is initialised.
+     *
+     * On Windows, Pango's native font backend doesn't see the Segoe UI Emoji
+     * font, so every emoji (project icons, task names…) would be drawn as a
+     * missing-glyph box. Its FreeType/fontconfig backend renders them, using
+     * the same Windows fonts, so use that one unless the user chose a backend.
      */
-    public void install_emoji_font_fallback () {
+    public void init () {
 #if WINDOWS
-        string family = "Segoe UI";
-        string? font_name = Gtk.Settings.get_default ().gtk_font_name;
-        if (font_name != null) {
-            string? system_family = Pango.FontDescription.from_string (font_name).get_family ();
-            if (system_family != null && system_family != "") {
-                family = system_family;
-            }
-        }
-
-        var provider = new Gtk.CssProvider ();
-        provider.load_from_string (
-            "window, popover { font-family: \"%s\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; }".printf (family)
-        );
-
-        Gtk.StyleContext.add_provider_for_display ( // vala-lint=deprecated
-            Gdk.Display.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        );
+        Environment.set_variable ("PANGOCAIRO_BACKEND", "fc", false);
 #endif
     }
 

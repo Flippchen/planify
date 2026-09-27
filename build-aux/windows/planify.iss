@@ -65,6 +65,8 @@ Root: HKCU; Subkey: "Software\Classes\planify\DefaultIcon"; ValueType: string; V
 Root: HKCU; Subkey: "Software\Classes\planify\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExe}"" ""%1"""
 
 [Run]
+; Index the installed fonts now rather than on Planify's first launch.
+Filename: "{app}\bin\fc-cache.exe"; StatusMsg: "Building the font cache..."; Flags: runhidden
 Filename: "{app}\bin\{#AppExe}"; Description: "{cm:LaunchProgram,Planify}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]

@@ -23,8 +23,6 @@ public class QuickAdd : Adw.Application {
     }
 
     protected override void activate () {
-        Platform.install_emoji_font_fallback ();
-
         main_window = new MainWindow (this);
         main_window.show ();
 
@@ -55,6 +53,8 @@ public class QuickAdd : Adw.Application {
     }
 
     public static int main (string[] args) {
+        Platform.init ();
+
         QuickAdd app = QuickAdd.instance;
         return app.run (args);
     }

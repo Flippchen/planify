@@ -92,6 +92,13 @@ for schema in "$MINGW_PREFIX"/share/glib-2.0/schemas/org.gtk.*.xml; do
 done
 glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas"
 
+# Fontconfig configuration. Planify renders text through fontconfig on
+# Windows (see Platform.init), which reads the fonts in C:\Windows\Fonts.
+# fc-cache.exe lets the installer build the font cache ahead of the first
+# launch.
+copy_tree etc/fonts
+cp "$MINGW_PREFIX/bin/fc-cache.exe" "$DIST_DIR/bin/"
+
 # Icon themes and GtkSourceView language definitions.
 copy_tree share/icons/Adwaita
 copy_tree share/icons/hicolor/index.theme
