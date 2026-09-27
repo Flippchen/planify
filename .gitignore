@@ -12,3 +12,5 @@ planify*txt
 .buildconfig
 .DS_Store
 .kiro
+build-windows/
+dist/

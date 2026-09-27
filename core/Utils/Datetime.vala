@@ -804,6 +804,18 @@ public class Utils.Datetime {
     private static bool locale_day_before_month () {
         if (_day_first == -1) {
             _day_first = 0; // default to month-first if it can't be determined
+#if WINDOWS
+            // There is no nl_langinfo () on Windows. Format a date whose day
+            // and month can't be confused and see which one comes first.
+            string sample = new GLib.DateTime.local (2001, 12, 31, 0, 0, 0).format ("%x");
+            if (sample != null) {
+                int day_pos = sample.index_of ("31");
+                int month_pos = sample.index_of ("12");
+                if (day_pos >= 0 && month_pos >= 0 && day_pos < month_pos) {
+                    _day_first = 1;
+                }
+            }
+#else
             unowned string d_fmt = Posix.NLItem.D_FMT.to_string ();
             if (d_fmt != null && d_fmt != "") {
                 int day_pos = first_token_pos (d_fmt, "de");   // %d, %e
@@ -812,11 +824,13 @@ public class Utils.Datetime {
                     _day_first = 1;
                 }
             }
+#endif
         }
 
         return _day_first == 1;
     }
 
+#if !WINDOWS
     // Position of the first %<token> in `fmt` whose letter is in `tokens`,
     // or -1 if none is present.
     private static int first_token_pos (string fmt, string tokens) {
@@ -835,6 +849,7 @@ public class Utils.Datetime {
 
         return best;
     }
+#endif
 
     // Day + abbreviated month in the order the system locale prefers.
     private static string day_month_format () {

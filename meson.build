@@ -29,6 +29,11 @@ endif
 
 cc = meson.get_compiler('c')
 
+is_windows = host_machine.system() == 'windows'
+if is_windows
+  add_project_arguments(['--define=WINDOWS'], language: 'vala')
+endif
+
 gnome = import('gnome')
 i18n = import('i18n')
 pkgconfig = import('pkgconfig')
@@ -47,7 +52,8 @@ libadwaita_dep = dependency('libadwaita-1', version: '>= 1.7.0')
 json_dep = dependency('json-glib-1.0')
 libical_dep = dependency('libical-glib')
 libgxml_dep = dependency('gxml-0.20')
-libsecret_dep = dependency('libsecret-1')
+# Unused on Windows, where there is no Secret Service to talk to.
+libsecret_dep = dependency('libsecret-1', required: not is_windows)
 libspelling = dependency('libspelling-1', required: get_option('spelling'))
 gtksourceview_dep = dependency('gtksourceview-5')
 m_dep = meson.get_compiler('c').find_library('m', required : false)
@@ -68,11 +74,26 @@ if icu_uc_dep.found ()
   add_project_arguments(['--vapidir=' + meson.project_source_root() / 'vapi'], language: 'vala')
 endif
 
+# MSYS2 builds libical without its Vala bindings, so ship them for Windows.
+if is_windows
+  add_project_arguments(['--vapidir=' + meson.project_source_root() / 'vapi' / 'windows'], language: 'vala')
+endif
+
 if libspelling.found ()
   add_project_arguments(['--define=WITH_LIBSPELLING'], language: 'vala')
 endif
 
-if get_option('portal')
+# The portal, Evolution Data Server and GNOME Online Accounts are freedesktop
+# services that don't exist on Windows.
+with_portal = get_option('portal') and not is_windows
+with_evolution = get_option('evolution') and not is_windows
+with_goa = get_option('goa') and not is_windows
+
+if is_windows and (get_option('portal') or get_option('evolution') or get_option('goa'))
+  message('portal, evolution and goa support are not available on Windows and have been disabled')
+endif
+
+if with_portal
     libportal_dep = dependency('libportal', required: true)
     libportal_gtk4_dep = dependency('libportal-gtk4', required: true)
     add_project_arguments('-D', 'WITH_LIBPORTAL', language: 'vala')
@@ -84,7 +105,7 @@ if get_option('portal')
     endif
 endif
 
-if get_option('evolution')
+if with_evolution
     libecal_dep = dependency('libecal-2.0', version: '>= 3.45.1')
     libedataserver_dep = dependency('libedataserver-1.2', version: '>= 3.45.1')
     add_project_arguments('-D', 'WITH_EVOLUTION', language: 'vala')
@@ -96,7 +117,7 @@ if get_option('evolution')
     endif
 endif
 
-if get_option('goa')
+if with_goa
     goa_dep = dependency('goa-1.0', required: true)
     add_project_arguments('-D', 'WITH_GOA', language: 'vala')
     add_project_arguments('-DGOA_API_IS_SUBJECT_TO_CHANGE', language: 'c')
@@ -157,12 +178,19 @@ config_file = configure_file(
     output : 'config.vala'
 )
 
+win_resources = []
+if is_windows
+  subdir('data/windows')
+endif
+
 subdir('core')
 subdir('src')
 subdir('quick-add')
 subdir('cli')
 subdir('data')
-subdir('search-provider')
+if not is_windows
+  subdir('search-provider')
+endif
 subdir('po')
 
 # Testing
@@ -173,8 +201,14 @@ summary({
   'Profile': get_option('profile'),
 }, section: 'Development')
 
+summary({
+  'Portal': with_portal,
+  'Evolution': with_evolution,
+  'GNOME Online Accounts': with_goa,
+}, section: 'Features')
+
 gnome.post_install(
   glib_compile_schemas: true,
   gtk_update_icon_cache: true,
-  update_desktop_database: true,
+  update_desktop_database: not is_windows,
 )

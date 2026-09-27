@@ -62,6 +62,20 @@ public class Services.TimeMonitor : Object {
     }
 
     private void listen_for_system_resume () {
+#if WINDOWS
+        // There is no logind on Windows, and the midnight timeout can fire
+        // late after the machine sleeps, so also check once a minute.
+        Timeout.add_seconds (60, () => {
+            var now = new DateTime.now_local ();
+            if (now.get_day_of_year () != last_registered_date.get_day_of_year () ||
+                now.get_year () != last_registered_date.get_year ()) {
+                check_day_change ();
+                schedule_midnight_check ();
+            }
+
+            return GLib.Source.CONTINUE;
+        });
+#else
         // logind via system bus — only works outside Flatpak
         if (!Util.get_default ().is_flatpak ()) {
             try {
@@ -114,6 +128,7 @@ public class Services.TimeMonitor : Object {
                 Services.LogService.get_default ().warn ("TimeMonitor", "Could not subscribe to ScreenSaver: %s".printf (e.message));
             }
         }
+#endif
     }
 
     private void check_day_change () {

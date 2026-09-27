@@ -259,7 +259,7 @@ public class MainWindow : Adw.ApplicationWindow {
         Services.Settings.get_default ().settings.changed["appearance"].connect (Util.get_default ().update_theme);
         Services.Settings.get_default ().settings.changed["dark-mode"].connect (Util.get_default ().update_theme);
 
-        #if WITH_LIBPORTAL
+        #if WITH_LIBPORTAL || WINDOWS
         Services.Settings.get_default ().settings.changed["run-on-startup"].connect (() => {
             update_autostart ();
         });
@@ -270,6 +270,14 @@ public class MainWindow : Adw.ApplicationWindow {
                 update_autostart ();
             }
         });
+        #endif
+
+        #if WINDOWS
+        // The autostart entry stores the executable path; refresh it in case
+        // Planify was reinstalled or moved since it was created.
+        if (Services.Settings.get_default ().settings.get_boolean ("run-on-startup")) {
+            update_autostart ();
+        }
         #endif
 
         Services.Settings.get_default ().settings.changed["mobile-mode"].connect (() => {
@@ -485,7 +493,16 @@ public class MainWindow : Adw.ApplicationWindow {
         overlay_split_view.show_sidebar = !overlay_split_view.show_sidebar;
     }
 
-    #if WITH_LIBPORTAL
+    #if WINDOWS
+    private void update_autostart () {
+        bool run_on_startup = Services.Settings.get_default ().settings.get_boolean ("run-on-startup");
+        bool run_in_background = Services.Settings.get_default ().settings.get_boolean ("run-in-background");
+
+        if (!Platform.set_autostart (Build.APPLICATION_ID, run_on_startup, run_in_background)) {
+            Services.LogService.get_default ().warn ("MainWindow", "Could not update the autostart entry");
+        }
+    }
+    #elif WITH_LIBPORTAL
     private void update_autostart () {
         bool run_on_startup = Services.Settings.get_default ().settings.get_boolean ("run-on-startup");
 

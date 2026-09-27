@@ -184,7 +184,7 @@ public class Widgets.TranslationRow : Adw.PreferencesRow {
         string? current_lang = null;
 
         foreach (var lang in languages) {
-            var path = Path.build_filename (Build.LOCALEDIR, lang, "LC_MESSAGES", Build.GETTEXT_PACKAGE + ".mo");
+            var path = Path.build_filename (Platform.get_locale_dir (Build.LOCALEDIR), lang, "LC_MESSAGES", Build.GETTEXT_PACKAGE + ".mo");
             if (FileUtils.test (path, FileTest.EXISTS)) {
                 mo_path = path;
                 current_lang = lang;

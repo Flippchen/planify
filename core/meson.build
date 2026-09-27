@@ -8,6 +8,8 @@ core_files = files(
     'Utils/MarkdownProcessor.vala',
     'Utils/JsonUtils.vala',
 
+    'Platform/Platform.vala',
+
     'Services/Settings.vala',
     'Services/EventBus.vala',
     'Services/Database.vala',
@@ -110,15 +112,19 @@ core_files = files(
     'Objects/Filters/AllItems.vala'
 )
 
-if get_option('evolution')
+if with_evolution
     core_files += 'Services/CalendarEvents/CalendarEvents.vala'
     core_files += 'Services/CalendarEvents/DateIterator.vala'
     core_files += 'Services/CalendarEvents/DateRange.vala'
     core_files += 'Services/CalendarEvents/Util.vala'
 endif
 
-if get_option('goa')
+if with_goa
     core_files += 'Services/GOA.vala'
+endif
+
+if is_windows
+    core_files += 'Platform/Win32.c'
 endif
 
 chrono_dep = dependency('chrono', fallback: ['chrono', 'libchrono_dep'])
@@ -140,23 +146,28 @@ core_deps = [
   gtksourceview_dep
 ]
 
-if get_option('evolution')
+if with_evolution
     if libecal_dep.found()
         core_deps += libecal_dep
         core_deps += libedataserver_dep
     endif
 endif
 
-if get_option('goa')
+if with_goa
     if goa_dep.found()
         core_deps += goa_dep
     endif
 endif
 
+platform_deps = []
+if is_windows
+    platform_deps += cc.find_library('advapi32')
+endif
+
 core_lib = shared_library(
     'planify',
     core_files,
-    dependencies: [ core_deps, m_dep ],
+    dependencies: [ core_deps, m_dep, platform_deps ],
     install: true,
     install_dir: [true, join_paths(get_option('includedir'), 'planify'), true],
     soversion: '0',

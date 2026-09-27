@@ -48,6 +48,11 @@
   <img loading="lazy" draggable="false" width='240' alt='Download on Flathub' src='https://flathub.org/api/badge?locale=en' />
 </a>
 
+### 🪟 Windows
+
+Planify also runs on Windows 10 and 11. See [docs/windows.md](docs/windows.md)
+for the installer, the portable build and how to build it yourself with MSYS2.
+
 ### 🛠 Build from Source
 
 <details>

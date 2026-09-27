@@ -65,7 +65,7 @@ public class Planify : Adw.Application {
 
     construct {
         Intl.setlocale (LocaleCategory.ALL, "");
-        string langpack_dir = Path.build_filename (Build.INSTALL_PREFIX, "share", "locale");
+        string langpack_dir = Path.build_filename (Platform.get_install_prefix (Build.INSTALL_PREFIX), "share", "locale");
         Intl.bindtextdomain (Build.GETTEXT_PACKAGE, langpack_dir);
         Intl.bind_textdomain_codeset (Build.GETTEXT_PACKAGE, "UTF-8");
         Intl.textdomain (Build.GETTEXT_PACKAGE);
@@ -138,6 +138,14 @@ public class Planify : Adw.Application {
             main_window.present ();
             return;
         }
+
+#if WINDOWS
+        // Windows has no .desktop file: set the window icon and register the
+        // planify:// handler (used by the Todoist login) ourselves.
+        Gtk.Window.set_default_icon_name (Build.APPLICATION_ID);
+        Platform.register_uri_scheme ();
+        Platform.install_emoji_font_fallback ();
+#endif
 
         main_window = new MainWindow (this);
 
