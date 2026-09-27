@@ -91,6 +91,8 @@ jobs:
           $bitmap.Save("$env:GITHUB_WORKSPACE\dist\screenshot.png")
 
           Get-Content "$env:LOCALAPPDATA\io.github.alainm23.planify\planify.log" -ErrorAction SilentlyContinue
+          # Emoji need an emoji font such as Segoe UI Emoji (seguiemj.ttf).
+          Get-ChildItem "$env:WINDIR\Fonts" -Filter "segui*" | Select-Object -ExpandProperty Name
 
           if ($app.HasExited) {
             throw "Planify exited during start-up with code $($app.ExitCode)"
