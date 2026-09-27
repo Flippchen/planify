@@ -107,6 +107,24 @@ jobs:
           path: dist/screenshot.png
           if-no-files-found: ignore
 
+      - name: Emoji diagnostics (temporary)
+        continue-on-error: true
+        run: |
+          pango-list | grep -iE "emoji|segoe ui symbol" | head -20 || true
+          printf '\xf0\x9f\x9a\x80\xef\xb8\x8f rocket+VS16  \xf0\x9f\x9a\x80 rocket  \xf0\x9f\x98\x80 grin\n' > emoji.txt
+          for backend in win32 fc; do
+            PANGOCAIRO_BACKEND=$backend pango-view --font="Segoe UI 24" --markup=false \
+              -q -o "dist/emoji-$backend.png" emoji.txt || echo "pango-view failed for $backend"
+          done
+          ls -la dist/emoji-*.png || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: emoji-diagnostics
+          path: dist/emoji-*.png
+          if-no-files-found: ignore
+
       - name: Create portable zip
         run: |
           VERSION=$(grep -Po "version:\s*'\K[0-9.]+(?=')" meson.build)
