@@ -26,7 +26,8 @@ Every push and pull request is built by the
    pacman -S --needed git grep zip \
        mingw-w64-ucrt-x86_64-{cc,meson,ninja,pkgconf,vala,gettext-tools} \
        mingw-w64-ucrt-x86_64-{glib2,glib-networking,gtk4,libadwaita,adwaita-icon-theme} \
-       mingw-w64-ucrt-x86_64-{gtksourceview5,libgee,json-glib,libsoup3,sqlite3} \
+       mingw-w64-ucrt-x86_64-{gtksourceview5,libspelling,hunspell-en} \
+       mingw-w64-ucrt-x86_64-{libgee,json-glib,libsoup3,sqlite3} \
        mingw-w64-ucrt-x86_64-{libical,libxml2,icu}
    ```
 
@@ -64,7 +65,6 @@ available on Windows:
 - **GNOME Online Accounts** detection when adding Nextcloud or CalDAV
   accounts. Adding them by hand works as usual.
 - **GNOME Shell search** integration.
-- **Spell checking**, which is disabled in Windows builds for now.
 
 Everything else, including local projects and syncing with Todoist,
 Nextcloud and CalDAV servers, works as on Linux. Some things work
@@ -78,6 +78,7 @@ differently:
 | Run on Startup | Background portal | `HKCU\...\CurrentVersion\Run` entry |
 | `planify://` links (Todoist login) | `.desktop` file | Registered under `HKCU\Software\Classes\planify` |
 | Reminders | Desktop notifications | Windows notifications |
+| Spell checking | Enchant (usually Hunspell) | The Windows spell checker, for every language installed in Windows; bundled English Hunspell dictionaries as a fallback |
 
 Quick Add (`io.github.alainm23.planify.quick-add.exe`) and the command-line
 tool (`io.github.alainm23.planify.cli.exe`) talk to the running app over

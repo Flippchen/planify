@@ -36,7 +36,7 @@ setup_args=(
     -Dportal=false
     -Devolution=false
     -Dgoa=false
-    -Dspelling=disabled
+    -Dspelling=enabled
 )
 
 if [[ -d "$BUILD_DIR" ]]; then
@@ -99,10 +99,18 @@ copy_tree share/gtksourceview-5
 gtk4-update-icon-cache -q -t -f "$DIST_DIR/share/icons/Adwaita" || true
 gtk4-update-icon-cache -q -t -f "$DIST_DIR/share/icons/hicolor" || true
 
+# Spell checking: enchant's Windows provider uses the spell checker built
+# into Windows (and the dictionaries of the user's languages); hunspell with
+# the bundled English dictionaries is the fallback when that isn't available.
+mkdir -p "$DIST_DIR/lib/enchant-2" "$DIST_DIR/share/enchant-2" "$DIST_DIR/share/hunspell"
+cp "$MINGW_PREFIX"/lib/enchant-2/enchant_{winspell,hunspell}.dll "$DIST_DIR/lib/enchant-2/"
+echo "*:winspell,hunspell" > "$DIST_DIR/share/enchant-2/enchant.ordering"
+cp "$MINGW_PREFIX"/share/hunspell/en_{US,GB}.{aff,dic} "$DIST_DIR/share/hunspell/"
+
 # Translations of the libraries Planify uses, for the languages it ships.
 for lang_dir in "$DIST_DIR"/share/locale/*/; do
     lang=$(basename "$lang_dir")
-    for domain in glib20 gtk40 libadwaita gtksourceview-5; do
+    for domain in glib20 gtk40 libadwaita gtksourceview-5 libspelling; do
         mo="$MINGW_PREFIX/share/locale/$lang/LC_MESSAGES/$domain.mo"
         if [[ -f "$mo" ]]; then
             cp "$mo" "$lang_dir/LC_MESSAGES/"
